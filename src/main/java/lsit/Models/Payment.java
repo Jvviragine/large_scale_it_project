@@ -8,5 +8,6 @@ public class Payment {
     public UUID id;
     public Boolean processed; // true if paid succesfuly , false if not
     public Double amount;
+    public Order order;
 
 }

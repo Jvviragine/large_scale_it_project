@@ -29,12 +29,15 @@ public class PaymentRepository {
 
         Payment x = payments.get(p.id);
         x.amount = p.amount;
+        x.order = p.order;
     }
 
     public void process(Payment p){
         Payment x = payments.get(p.id);
         x.processed = true;
     }
+
+    
 
     public List<Payment> list(){
         return new ArrayList<>(payments.values());
