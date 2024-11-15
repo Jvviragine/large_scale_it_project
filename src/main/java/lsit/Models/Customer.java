@@ -12,17 +12,33 @@ import java.util.UUID;
  */
 public class Customer {
     
+    // Unique identifier for the customer
     private UUID id;
+    
+    // Full name of the customer
     private String name;
+    
+    // Unique email address of the customer
     private String email;
+    
+    // Contact phone number of the customer
     private String phoneNumber;
 
-    // Default constructor
+    /**
+     * Default constructor.
+     * Initializes the customer with a unique UUID.
+     */
     public Customer() {
         this.id = UUID.randomUUID();
     }
 
-    // Parameterized constructor
+    /**
+     * Parameterized constructor.
+     * 
+     * @param name         The full name of the customer.
+     * @param email        The unique email address of the customer.
+     * @param phoneNumber  The contact phone number of the customer.
+     */
     public Customer(String name, String email, String phoneNumber) {
         this.id = UUID.randomUUID();
         this.name = name;
@@ -30,20 +46,30 @@ public class Customer {
         this.phoneNumber = phoneNumber;
     }
 
-    // Getters
+    // Getter for 'id'
     public UUID getId() {
         return id;
     }
 
+    /**
+     * Sets the unique identifier for the customer.
+     * 
+     * @param id The UUID to set for the customer.
+     */
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    // Getter and Setter for 'name'
     public String getName() {
         return name;
     }
 
-    // Setters
     public void setName(String name) {
         this.name = name;
     }
 
+    // Getter and Setter for 'email'
     public String getEmail() {
         return email;
     }
@@ -52,6 +78,7 @@ public class Customer {
         this.email = email;
     }
     
+    // Getter and Setter for 'phoneNumber'
     public String getPhoneNumber() {
         return phoneNumber;
     }
