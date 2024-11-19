@@ -1,0 +1,16 @@
+#https://gitlab.com/lsit-ken3239/live-demo
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          gitlab:
+            client-id: 076f9e789fac2f361c2e0145aa0cc7298cd6c5455492f3c90999480e40406d3f
+            client-secret: gloas-2b635dc4bf910399e28ed5ede32d88305bc7ebf6450150ee8a3cac4078fecf91
+            scope: openid+profile+email
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/gitlab
+        provider:
+          gitlab:
+            issuer-uri: https://gitlab.com
+            user-name-attribute: sub
