@@ -16,9 +16,11 @@ public class HomeController {
     }
 
     @GetMapping("/user")
-    public String getUser(OAuth2AuthenticationToken authentication){
-        // var groups = (List<String>)authentication.getPrincipal().getAttribute("groups");
-        // return groups.get(0);
+    public String getUser(OAuth2AuthenticationToken authentication) throws Exception{
+        var groups = (List<String>)authentication.getPrincipal().getAttribute("https://gitlab.org/claims/groups/owner");
+        if(!groups.contains("lsit-ken3239/roles/petkeepers")){
+            //throw new Exception("Access Denied...");
+        };
 
         var userAttributes = authentication.getPrincipal().getAttributes();
 
