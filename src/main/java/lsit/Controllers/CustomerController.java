@@ -23,7 +23,7 @@ public class CustomerController {
     private CustomerRepository customerRepository;
 
     /**
-     * Retrieves all customers.
+     * Retrieves all customers. access: manager
      * 
      * @return List of all customers.
      */
@@ -34,7 +34,7 @@ public class CustomerController {
     }
 
     /**
-     * Retrieves a customer by their UUID.
+     * Retrieves a customer by their UUID. access: manager
      * 
      * @param id The UUID of the customer.
      * @return The Customer object if found, else 404 Not Found.
@@ -50,7 +50,7 @@ public class CustomerController {
     }
 
     /**
-     * Adds a new customer.
+     * Adds a new customer. access: customer, server, manager
      * 
      * @param customer The customer details.
      * @return The added Customer object.
@@ -62,7 +62,7 @@ public class CustomerController {
     }
 
     /**
-     * Updates an existing customer.
+     * Updates an existing customer. access: server, manager
      * 
      * @param id The UUID of the customer to update.
      * @param customerDetails The updated customer details.
@@ -81,7 +81,7 @@ public class CustomerController {
     }
 
     /**
-     * Deletes a customer by their UUID.
+     * Deletes a customer by their UUID. access: server, manager
      * 
      * @param id The UUID of the customer to delete.
      * @return 200 OK if deleted, else 404 Not Found.

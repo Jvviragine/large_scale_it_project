@@ -22,22 +22,26 @@ public class MenuController {
         this.menu = menu;
     }
 
+    // access: customer, server, manager
     @GetMapping("/menu")
     public List<MenuItem> list(){
         return menu.list();
     }
 
+    // access: customer, server, manager
     @GetMapping("/getMenuItem/{id}")
     public MenuItem get(@PathVariable("id") UUID id){
         return menu.get(id);
     }
 
+    // access: manager
     @PostMapping("/addMenuItem")
     public MenuItem add(@RequestBody MenuItem i){
         menu.add(i);
         return i;
     }
 
+    // access: manager
     @PutMapping("/updateMenuItem/{id}")
     public MenuItem update(@PathVariable("id") UUID id, @RequestBody MenuItem i){
         i.id = id;
@@ -45,6 +49,7 @@ public class MenuController {
         return i;
     }
 
+    // access: manager
     @DeleteMapping("/deleteMenuItem/{id}")
     public void delete(@PathVariable("id") UUID id){
         menu.remove(id);

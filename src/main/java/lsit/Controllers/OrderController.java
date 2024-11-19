@@ -24,31 +24,36 @@ public class OrderController {
         this.orderRepository = orderRepository;
     }
 
+    // access: server, manager
     @GetMapping("/orders")
-    public List<Order> list(){
+    public List<Order> getAllOrders(){
         return orderRepository.list();
     }
 
+    // access: server, manager
     @GetMapping("/orders/{id}")
-    public Order get(@PathVariable("id") UUID id){
+    public Order getOrderById(@PathVariable("id") UUID id){
         return orderRepository.get(id);
     }
 
+    // access: customer, server, manager
     @PostMapping("/orders")
-    public Order add(@RequestBody Order o){
+    public Order addOrder(@RequestBody Order o){
         orderRepository.add(o);
         return o;
     }
 
+    // access: server, manager
     @PutMapping("/orders/{id}")
-    public Order update(@PathVariable("id") UUID id, @RequestBody Order o){
+    public Order updateOrder(@PathVariable("id") UUID id, @RequestBody Order o){
         o.id = id;
         orderRepository.update(o);
         return o;
     }
 
+    // access: server, manager
     @DeleteMapping("/orders/{id}")
-    public void delete(@PathVariable("id") UUID id){
+    public void deleteOrder(@PathVariable("id") UUID id){
         orderRepository.remove(id);
     }
 }

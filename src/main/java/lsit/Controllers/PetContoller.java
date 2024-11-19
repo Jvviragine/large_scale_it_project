@@ -22,6 +22,7 @@ public class PetContoller {
         this.petRepository = petRepository;
     }
 
+    // access: customer, server, manager
     @GetMapping("/pets")
     public List<Pet> list(){
         return petRepository.list();
