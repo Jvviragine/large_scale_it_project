@@ -6,7 +6,6 @@ public class Order {
     public UUID id;
     public Customer customer;
     public MenuItem[] orderItems;
-
-
+    
 }
 
