@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import lsit.Models.Pet;
 
 @Repository
-public class PetRepository {
+public class InMemoryPetRepository implements IPetRepository {
     static HashMap<UUID, Pet> pets = new HashMap<>();
 
     public void add(Pet p){

@@ -1,37 +1,24 @@
 package lsit.Repositories;
-
-
 import java.util.*;
-
 import org.springframework.stereotype.Repository;
-
 import lsit.Models.Order;
 
 
 @Repository
-public class OrderRepository {
-    static HashMap<UUID, Order> orders = new HashMap<>();
-
-    public void add(Order o){
-        o.id = UUID.randomUUID();
-        orders.put(o.id, o);
+public class OrderRepository extends GenericS3Repository<Order> {
+    public OrderRepository() {
+        super("orders", Order.class);
     }
 
-    public Order get(UUID id){
-        return orders.get(id);
+    @Override
+    protected void setItemId(Order item) {
+        if (item.getId() == null) {
+            item.setId(UUID.randomUUID());
+        }
     }
 
-    public void remove(UUID id){
-        orders.remove(id);
-    }
-
-    public void update(Order o){
-        Order x = orders.get(o.id);
-        x.customer = o.customer;
-        x.orderItems = o.orderItems;
-    }
-
-    public List<Order> list(){
-        return new ArrayList<>(orders.values());
+    @Override
+    protected UUID getItemId(Order item) {
+        return item.getId();
     }
 }

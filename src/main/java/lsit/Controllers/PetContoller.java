@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lsit.Models.Pet;
-import lsit.Repositories.PetRepository;
+import lsit.Repositories.IPetRepository;
 
 @RestController
 public class PetContoller {
 
-    PetRepository petRepository;
+    IPetRepository petRepository;
 
-    public PetContoller(PetRepository petRepository){
+    public PetContoller(IPetRepository petRepository){
         this.petRepository = petRepository;
     }
 

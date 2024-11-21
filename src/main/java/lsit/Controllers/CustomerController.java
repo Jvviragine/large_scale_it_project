@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import lsit.Exceptions.ResourceNotFoundException;
 import lsit.Models.Customer;
-import lsit.Repositories.CustomerRepository;
+import lsit.Services.CustomerService;
 
 /**
  * Controller for handling Customer-related HTTP requests.
@@ -20,7 +22,7 @@ import lsit.Repositories.CustomerRepository;
 public class CustomerController {
     
     @Autowired
-    private CustomerRepository customerRepository;
+    private CustomerService customerService;
 
     /**
      * Retrieves all customers. access: manager
@@ -29,7 +31,7 @@ public class CustomerController {
      */
     @GetMapping
     public ResponseEntity<List<Customer>> getAllCustomers(){
-        List<Customer> customers = customerRepository.list();
+        List<Customer> customers = customerService.getAllCustomers();
         return ResponseEntity.ok(customers);
     }
 
@@ -41,12 +43,8 @@ public class CustomerController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable UUID id){
-        Customer customer = customerRepository.get(id);
-        if(customer != null){
-            return ResponseEntity.ok(customer);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Customer customer = customerService.getCustomerById(id);
+        return ResponseEntity.ok(customer);
     }
 
     /**
@@ -57,8 +55,8 @@ public class CustomerController {
      */
     @PostMapping
     public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer){
-        customerRepository.add(customer);
-        return ResponseEntity.ok(customer);
+        Customer newCustomer = customerService.addCustomer(customer);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newCustomer);
     }
 
     /**
@@ -70,14 +68,8 @@ public class CustomerController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody Customer customerDetails){
-        customerDetails.setId(id);
-        customerRepository.update(customerDetails);
-        Customer updatedCustomer = customerRepository.get(id);
-        if(updatedCustomer != null){
-            return ResponseEntity.ok(updatedCustomer);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Customer updatedCustomer = customerService.updateCustomer(id, customerDetails);
+        return ResponseEntity.ok(updatedCustomer);
     }
 
     /**
@@ -88,12 +80,12 @@ public class CustomerController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable UUID id){
-        Customer customer = customerRepository.get(id);
-        if(customer != null){
-            customerRepository.remove(id);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        customerService.deleteCustomer(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

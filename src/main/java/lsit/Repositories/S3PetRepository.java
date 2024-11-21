@@ -4,12 +4,13 @@ import java.net.URI;
 import java.util.*;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Primary;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import lsit.Models.Customer;
+import lsit.Models.Pet;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -21,20 +22,19 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
-/**
- * Repository for managing Customer data.
- */
+
+@Primary
 @Repository
-public class CustomerRepository implements ICustomerRepository {
-    
+public class S3PetRepository implements IPetRepository {
+
     final String BUCKET="pizzeria_bucket";
-    final String PREFIX="pizzeria/customers/";
+    final String PREFIX="petstore/pets/";
     final String ENDPOINT_URL="https://storage.googleapis.com";
 
     S3Client s3client;
     AwsCredentials awsCredentials;
     
-    public CustomerRepository(){
+    public S3PetRepository(){
         Dotenv dotenv = Dotenv.load();
 
         String accessKey = dotenv.get("ACCESS_KEY");
@@ -51,40 +51,25 @@ public class CustomerRepository implements ICustomerRepository {
             .build();
     }
 
-    /**
-     * Adds a new customer.
-     * Generates a unique UUID for the customer.
-     * 
-     * @param c The customer to add.
-     */
-    public void add(Customer c) {
+    public void add(Pet p){
         try{
-            // TO DO make random only if not specified
-            c.setId(UUID.randomUUID());
+            p.id = UUID.randomUUID();
 
             ObjectMapper om = new ObjectMapper();
-            String customerJson = om.writeValueAsString(c);
+
+            String petJson = om.writeValueAsString(p);
             
             s3client.putObject(PutObjectRequest.builder()
                 .bucket(BUCKET)
-                .key(PREFIX + c.getId().toString())
+                .key(PREFIX + p.id.toString())
                 .build(),
-                RequestBody.fromString(customerJson)
+                RequestBody.fromString(petJson)
             );
         }
-        catch(JsonProcessingException e){
-            // Log error
-            e.printStackTrace();
-        }
+        catch(JsonProcessingException e){}
     }
 
-    /**
-     * Retrieves a customer by ID.
-     * 
-     * @param id The UUID of the customer.
-     * @return The Customer object or null if not found.
-     */
-    public Customer get(UUID id) {
+    public Pet get(UUID id){
         try{
             var objectBytes = s3client.getObject(GetObjectRequest.builder()
                 .bucket(BUCKET)
@@ -93,19 +78,14 @@ public class CustomerRepository implements ICustomerRepository {
             ).readAllBytes();
 
             ObjectMapper om = new ObjectMapper();
-            Customer c = om.readValue(objectBytes, Customer.class);
+            Pet p = om.readValue(objectBytes, Pet.class);
 
-            return c;
+            return p;
         }catch(Exception e){
             return null;
         }
     }
 
-    /**
-     * Removes a customer by ID.
-     * 
-     * @param id The UUID of the customer to remove.
-     */
     public void remove(UUID id){
         s3client.deleteObject(DeleteObjectRequest.builder()
             .bucket(BUCKET)
@@ -114,61 +94,50 @@ public class CustomerRepository implements ICustomerRepository {
         );  
     }
 
-    /**
-     * Updates an existing customer's details.
-     * 
-     * @param c The customer with updated information.
-     */
-    public void update(Customer c){
+    public void update(Pet p){
         try{
-            Customer existing = this.get(c.getId());
-            if(existing == null) return;
+            Pet x = this.get(p.id);
+            if(x == null) return;
 
             ObjectMapper om = new ObjectMapper();
-            String customerJson = om.writeValueAsString(c);
+            String petJson = om.writeValueAsString(p);
             s3client.putObject(PutObjectRequest.builder()
                 .bucket(BUCKET)
-                .key(PREFIX + c.getId().toString())
+                .key(PREFIX + p.id.toString())
                 .build(),
-                RequestBody.fromString(customerJson)
+                RequestBody.fromString(petJson)
             );
         }
-        catch(JsonProcessingException e){
-            // Log error
-            e.printStackTrace();
-        }
+        catch(JsonProcessingException e){}
     }
 
-    /**
-     * Lists all customers.
-     * 
-     * @return A list of all customers.
-     */
-    public List<Customer> list(){
-        List<Customer> customers = new ArrayList<>();
+    public List<Pet> list(){
+        List<Pet> pets = new ArrayList<>();
         List<S3Object> objects = s3client.listObjects(ListObjectsRequest.builder()
           .bucket(BUCKET)
           .prefix(PREFIX)
           .build()  
         ).contents();
-
+    
         for(S3Object o : objects){
             try {
+                // Only process if the key is longer than the prefix
                 String key = o.key();
                 if (key.length() > PREFIX.length()) {
                     String idString = key.substring(PREFIX.length());
                     UUID id = UUID.fromString(idString);
-                    Customer c = this.get(id);
-                    if (c != null) {
-                        customers.add(c);
+                    Pet p = this.get(id);
+                    if (p != null) {
+                        pets.add(p);
                     }
                 }
             } catch (Exception e) {
-                System.err.println("Error processing customer object: " + o.key());
+                // Log the error and continue processing other objects
+                System.err.println("Error processing object: " + o.key());
                 e.printStackTrace();
             }
         }
-
-        return customers;
+    
+        return pets;
     }
 }
