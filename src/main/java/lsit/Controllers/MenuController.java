@@ -6,6 +6,7 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ public class MenuController {
 
     // access: customer, server, manager
     @GetMapping
+    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER', 'PIZZARIA_CUSTOMER')")
     public ResponseEntity<List<MenuItem>> getAllMenuItems() {
         List<MenuItem> menuItems = menuItemService.getAllMenuItems();
         return ResponseEntity.ok(menuItems);
@@ -37,6 +39,7 @@ public class MenuController {
 
     // access: customer, server, manager
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER', 'PIZZARIA_CUSTOMER')")
     public ResponseEntity<MenuItem> getMenuItemById(@PathVariable UUID id) {
         MenuItem menuItem = menuItemService.getMenuItemById(id);
         return ResponseEntity.ok(menuItem);
@@ -44,6 +47,7 @@ public class MenuController {
 
     // access: manager
     @PostMapping
+    @PreAuthorize("hasRole('PIZZARIA_MANAGER')")
     public ResponseEntity<MenuItem> addMenuItem(@RequestBody MenuItem menuItem) {
         MenuItem newMenuItem = menuItemService.addMenuItem(menuItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(newMenuItem);
@@ -51,6 +55,7 @@ public class MenuController {
 
     // access: manager
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('PIZZARIA_MANAGER')")
     public ResponseEntity<MenuItem> updateMenuItem(@PathVariable UUID id, @RequestBody MenuItem menuItemDetails) {
         MenuItem updatedMenuItem = menuItemService.updateMenuItem(id, menuItemDetails);
         return ResponseEntity.ok(updatedMenuItem);
@@ -58,6 +63,7 @@ public class MenuController {
 
     // access: manager
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('PIZZARIA_MANAGER')")
     public ResponseEntity<Void> deleteMenuItem(@PathVariable UUID id) {
         menuItemService.deleteMenuItem(id);
         return ResponseEntity.ok().build();
