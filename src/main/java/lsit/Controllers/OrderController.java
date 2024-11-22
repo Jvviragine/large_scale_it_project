@@ -6,6 +6,8 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,32 +31,63 @@ public class OrderController {
 
     // access: server, manager
     @GetMapping("/orders")
-    public List<Order> getAllOrders(){
-        return orderService.getAllOrders();
+    public List<Order> getAllOrders(OAuth2AuthenticationToken authentication) throws Exception{
+        var groups = (List<String>)authentication.getPrincipal().getAttribute("https://gitlab.org/claims/groups/owner");
+        if(groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_server") || 
+        groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_manager")){
+            return orderService.getAllOrders();
+        } else {
+            throw new AccessDeniedException("You do not have permission to access this resource.");
+        }
     }
 
     // access: server, manager
     @GetMapping("/orders/{id}")
-    public Order getOrderById(@PathVariable("id") UUID id){
-        return orderService.getOrderById(id);
+    public Order getOrderById(@PathVariable("id") UUID id, OAuth2AuthenticationToken authentication) throws Exception{
+        var groups = (List<String>)authentication.getPrincipal().getAttribute("https://gitlab.org/claims/groups/owner");
+        if(groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_server") || 
+        groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_manager")){
+            return orderService.getOrderById(id);
+        } else {
+            throw new AccessDeniedException("You do not have permission to access this resource.");
+        }   
     }
 
     // access: customer, server, manager
     @PostMapping("/orders")
-    public Order addOrder(@RequestBody Order o){
-        return orderService.addOrder(o.getCustomerId(), o.getOrderItemIds());
+    public Order addOrder(@RequestBody Order o, OAuth2AuthenticationToken authentication) throws Exception{
+        var groups = (List<String>)authentication.getPrincipal().getAttribute("https://gitlab.org/claims/groups/owner");
+        if(groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_server") || 
+        groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_manager") || 
+        groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_customer")){
+            return orderService.addOrder(o.getCustomerId(), o.getOrderItemIds());
+        } else {
+            throw new AccessDeniedException("You do not have permission to access this resource.");
+        }   
     }
 
     // access: server, manager
     @PutMapping("/orders/{id}")
-    public Order updateOrder(@PathVariable("id") UUID id, @RequestBody Order o){
-        return orderService.updateOrder(id, o.getCustomerId(), o.getOrderItemIds());
+    public Order updateOrder(@PathVariable("id") UUID id, @RequestBody Order o, OAuth2AuthenticationToken authentication) throws Exception{
+        var groups = (List<String>)authentication.getPrincipal().getAttribute("https://gitlab.org/claims/groups/owner");
+        if(groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_server") || 
+        groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_manager")){
+            return orderService.updateOrder(id, o.getCustomerId(), o.getOrderItemIds());
+        } else {
+            throw new AccessDeniedException("You do not have permission to access this resource.");
+        }   
     }
 
     // access: server, manager
     @DeleteMapping("/orders/{id}")
-    public void deleteOrder(@PathVariable("id") UUID id){
-        orderService.deleteOrder(id);
+    public void deleteOrder(@PathVariable("id") UUID id, OAuth2AuthenticationToken authentication) throws Exception {
+        var groups = (List<String>)authentication.getPrincipal().getAttribute("https://gitlab.org/claims/groups/owner");
+        if(groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_server") || 
+        groups.contains("lsit-ken3239/roles/pizzeria/pizzaria_manager")){
+            orderService.deleteOrder(id);
+        } else {
+            throw new AccessDeniedException("You do not have permission to access this resource.");
+        }   
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -65,5 +98,10 @@ public class OrderController {
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<String> handleInvalidInputException(InvalidInputException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 }
