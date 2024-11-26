@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import lsit.Exceptions.ResourceNotFoundException;
@@ -30,6 +31,7 @@ public class CustomerController {
      * @return List of all customers.
      */
     @GetMapping
+    @PreAuthorize("hasRole('PIZZARIA_MANAGER')")
     public ResponseEntity<List<Customer>> getAllCustomers(){
         List<Customer> customers = customerService.getAllCustomers();
         return ResponseEntity.ok(customers);
@@ -42,6 +44,7 @@ public class CustomerController {
      * @return The Customer object if found, else 404 Not Found.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('PIZZARIA_MANAGER')")
     public ResponseEntity<Customer> getCustomerById(@PathVariable UUID id){
         Customer customer = customerService.getCustomerById(id);
         return ResponseEntity.ok(customer);
@@ -54,6 +57,7 @@ public class CustomerController {
      * @return The added Customer object.
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER', 'PIZZARIA_CUSTOMER')")
     public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer){
         Customer newCustomer = customerService.addCustomer(customer);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCustomer);
@@ -67,6 +71,7 @@ public class CustomerController {
      * @return The updated Customer object if found, else 404 Not Found.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER')")
     public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody Customer customerDetails){
         Customer updatedCustomer = customerService.updateCustomer(id, customerDetails);
         return ResponseEntity.ok(updatedCustomer);
@@ -79,6 +84,7 @@ public class CustomerController {
      * @return 200 OK if deleted, else 404 Not Found.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER')")
     public ResponseEntity<Void> deleteCustomer(@PathVariable UUID id){
         customerService.deleteCustomer(id);
         return ResponseEntity.ok().build();
