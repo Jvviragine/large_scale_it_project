@@ -23,7 +23,7 @@ public class Payment {
     public UUID getOrderId(){
         return OrderId;
     }
-
+    // get payment id
     public UUID getPaymentId(){
         return PaymentId;
     }
