@@ -55,17 +55,18 @@ public class SecurityConfig {
                 }
             }
 
+
             List<GrantedAuthority> authorities = new ArrayList<>(oauth2User.getAuthorities());
 
             if (!groups.isEmpty()) {
                 groups.forEach(group -> {
-                    if (group.contains("pizzaria_server")) {
+                    if (group.contains("pizzeria_server")) {
                         authorities.add(new SimpleGrantedAuthority("ROLE_PIZZARIA_SERVER"));
                     }
-                    if (group.contains("pizzaria_manager")) {
+                    if (group.contains("pizzeria_manager")) {
                         authorities.add(new SimpleGrantedAuthority("ROLE_PIZZARIA_MANAGER"));
                     }
-                    if (group.contains("pizzaria_customer")) {
+                    if (group.contains("pizzeria_customer")) {
                         authorities.add(new SimpleGrantedAuthority("ROLE_PIZZARIA_CUSTOMER"));
                     }
                 });
