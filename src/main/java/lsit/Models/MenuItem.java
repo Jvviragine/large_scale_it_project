@@ -3,12 +3,24 @@ package lsit.Models;
 import java.util.UUID;
 
 public class MenuItem {
-    public UUID id;
-    public String name;
-    public String description;
-    public double price;
-    public MealSize size;
-    public String[] listOfAllergies;
+
+    // Unique identifier for the customer
+    private UUID id;
+
+    // Name of the Dish
+    private String name;
+
+    // Description of the Dish
+    private String description;
+
+    //The price we take for the Dish
+    private double price;
+
+    // size of the Dish you want to order: we offer Kids and normal size
+    private MealSize size;
+
+    // List of Allergies of the dish
+    private String[] listOfAllergies;
 
 
     public enum MealSize {
@@ -20,7 +32,15 @@ public class MenuItem {
         this.id = UUID.randomUUID();
     }
 
-    // Parameterized constructor
+    /**
+     * Parameterized constructor.
+     * 
+     * @param name              Name of the Dish
+     * @param description       Description of the Dish
+     * @param price             The price we take for the Dish
+     * @param size              size of the Dish you want to order: we offer Kids and normal size
+     * @param listOfAllergies   List of Allergies of the dish
+     */
     public MenuItem(String name, String description, double price, MealSize size, String[] listOfAllergies) {
         this.id = UUID.randomUUID();
         this.name = name;
@@ -89,3 +109,4 @@ public class MenuItem {
         this.listOfAllergies = listOfAllergies;
     }
 }
+
