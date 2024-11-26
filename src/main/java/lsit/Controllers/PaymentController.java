@@ -2,6 +2,7 @@ package lsit.Controllers;
 
 import java.util.*;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,35 +26,40 @@ public class PaymentController {
 
     // access: manager
     @GetMapping("/payments")
+    @PreAuthorize("hasAnyRole('PIZZARIA_MANAGER')")
     public List<Payment> getAllPayments(){
         return paymentRepository.list();
     }
 
-    // access: manager
+    // access: manager, server
     @GetMapping("/payments/{id}")
-    public Payment getPaymentById(@PathVariable("id") UUID id){
-        return paymentRepository.get(id);
+    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER')")
+    public Payment getPaymentById(@PathVariable("id") UUID PaymentId){
+        return paymentRepository.get(PaymentId);
     }
 
     // access: server, manager
     @PostMapping("/payments")
+    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER')")
     public Payment addPayment(@RequestBody Payment p){
         paymentRepository.add(p);
         return p;
     }
 
-    // access: server, manager
+    // access: manager
     @PutMapping("/payments/{id}")
-    public Payment updatePayment(@PathVariable("id") UUID id, @RequestBody Payment p){
-        p.id = id;
+    @PreAuthorize("hasAnyRole('PIZZARIA_MANAGER')")
+    public Payment updatePayment(@PathVariable("id") UUID PaymentId, @RequestBody Payment p){
+        p.setPaymentId(PaymentId);
         paymentRepository.update(p);
         return p;
     }
 
     // access: manager
     @DeleteMapping("/payments/{id}")
-    public void deletePayment(@PathVariable("id") UUID id){
-        paymentRepository.remove(id);
+    @PreAuthorize("hasAnyRole('PIZZARIA_MANAGER')")
+    public void deletePayment(@PathVariable("id") UUID PaymentId){
+        paymentRepository.remove(PaymentId);
     }
 
 }
