@@ -69,7 +69,8 @@ public class CustomerService {
      * @return The updated Customer object.
      * @throws ResourceNotFoundException if the customer is not found.
      */
-    public Customer updateCustomer(UUID id, Customer customerDetails) {
+    public Customer updateCustomer(Customer customerDetails) {
+        UUID id = customerDetails.getId();
         logger.info("Updating customer with ID: {}", id);
         Customer existingCustomer = customerRepository.get(id);
         if (existingCustomer == null) {
