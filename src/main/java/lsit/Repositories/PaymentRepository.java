@@ -24,6 +24,5 @@ public class PaymentRepository extends GenericS3Repository<Payment>  {
     protected UUID getItemId(Payment payment){
         return payment.getPaymentId();
     }
-    
 
 }
