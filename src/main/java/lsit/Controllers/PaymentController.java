@@ -17,7 +17,6 @@ import lsit.Repositories.PaymentRepository;
 
 @RestController
 public class PaymentController {
-    
     PaymentRepository paymentRepository;
 
     public PaymentController(PaymentRepository paymentRepository){

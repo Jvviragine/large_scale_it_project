@@ -19,6 +19,7 @@ public class Payment {
         this.amount = amount;
     }
 
+    // get the order id
     public UUID getOrderId(){
         return OrderId;
     }
