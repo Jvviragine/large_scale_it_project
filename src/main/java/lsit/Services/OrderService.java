@@ -74,6 +74,12 @@ public class OrderService {
             throw new InvalidInputException("Invalid Customer ID");
         }
 
+        // Assumption -> an order must have menu_items
+        if (menuItemIds == null) {
+            logger.error("Menu item IDs cannot be null");
+            throw new InvalidInputException("Menu item IDs cannot be null");
+        }
+
         var menuItems = menuItemIds.stream()
                 .map(menuItemRepository::get)
                 .filter(item -> item != null)
@@ -92,43 +98,55 @@ public class OrderService {
     /**
      * Updates an existing order.
      * 
-     * @param id The UUID of the order to update.
-     * @param customerId The UUID of the customer.
-     * @param menuItemIds The list of menu item UUIDs.
+     * @param orderDetails The ORder object containing updated details
+     * id The UUID of the order to update.
+     * customerId The UUID of the customer.
+     * menuItemIds The list of menu item UUIDs.
      * @return The updated Order object.
      * @throws ResourceNotFoundException if the order or customer is not found.
      * @throws InvalidInputException if the menu item IDs are invalid.
      */
-    public Order updateOrder(UUID id, UUID customerId, List<UUID> menuItemIds) {
+    public Order updateOrder(Order orderDetails) {
+        UUID id = orderDetails.getId();
         logger.info("Updating order with ID: {}", id);
-        Order order = orderRepository.get(id);
-        if (order == null) {
+        // Verify order exists
+        Order existingOrder = orderRepository.get(id);
+        if (existingOrder == null) {
             logger.error("Order not found with ID: {}", id);
             throw new ResourceNotFoundException("Order not found");
         }
-
-        var customer = customerRepository.get(customerId);
-        if (customer == null) {
-            logger.error("Invalid Customer ID: {}", customerId);
-            throw new InvalidInputException("Invalid Customer ID");
+        // Check if customer_id needs to be updated
+        UUID customerId = orderDetails.getCustomerId();
+        if (customerId != null) {
+            // Verify that a customer with this id exist
+            var customer = customerRepository.get(customerId);
+            if (customer == null) {
+                logger.error("Invalid Customer ID: {}", customerId);
+                throw new InvalidInputException("Invalid Customer ID");
+            }
+            existingOrder.setCustomerId(customerId);
         }
-
-        var menuItems = menuItemIds.stream()
+        
+        // Check if menuItems need to be udpated
+        List<UUID> menuItemIds = orderDetails.getOrderItemIds();
+        if (menuItemIds != null) {
+            // Try to get the items from the menuItemRepository
+            var menuItems = menuItemIds.stream()
                 .map(menuItemRepository::get)
                 .filter(item -> item != null)
                 .toList();
 
-        // The menu items should exist in the repository and the number of provided menu items 
-        // should be equal to the number of menu items we are able to retrieve
-        if (menuItems.isEmpty() || menuItems.size() != menuItemIds.size()) {
-            logger.error("Order must contain valid menu items");
-            throw new InvalidInputException("Order must contain valid menu items");
-        }
+            // If menuItemIds are not null then we expect to retrieve >0 menu item ids from the 
+            // repository and this number should match the size of the provided menuItemIds
+            if (menuItems.isEmpty() || menuItems.size() != menuItemIds.size()) {
+                logger.error("Order must contain valid menu items");
+                throw new InvalidInputException("Order must contain valid menu items");
+            }
+            existingOrder.setOrderItemIds(menuItemIds);
 
-        order.setCustomerId(customerId);
-        order.setOrderItemIds(menuItemIds);
-        orderRepository.update(order);
-        return order;
+        }
+        orderRepository.update(existingOrder);
+        return existingOrder;
     }
 
     /**

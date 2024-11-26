@@ -61,13 +61,13 @@ public class SecurityConfig {
             if (!groups.isEmpty()) {
                 groups.forEach(group -> {
                     if (group.contains("pizzeria_server")) {
-                        authorities.add(new SimpleGrantedAuthority("ROLE_PIZZARIA_SERVER"));
+                        authorities.add(new SimpleGrantedAuthority("ROLE_PIZZERIA_SERVER"));
                     }
                     if (group.contains("pizzeria_manager")) {
-                        authorities.add(new SimpleGrantedAuthority("ROLE_PIZZARIA_MANAGER"));
+                        authorities.add(new SimpleGrantedAuthority("ROLE_PIZZERIA_MANAGER"));
                     }
                     if (group.contains("pizzeria_customer")) {
-                        authorities.add(new SimpleGrantedAuthority("ROLE_PIZZARIA_CUSTOMER"));
+                        authorities.add(new SimpleGrantedAuthority("ROLE_PIZZERIA_CUSTOMER"));
                     }
                 });
             }

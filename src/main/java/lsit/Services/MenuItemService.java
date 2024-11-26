@@ -65,12 +65,12 @@ public class MenuItemService {
     /**
      * Updates an existing menu item.
      *
-     * @param id The UUID of the menu item to update.
      * @param menuItemDetails The MenuItem object containing updated details.
      * @return The updated MenuItem object.
      * @throws ResourceNotFoundException if the menu item is not found.
      */
-    public MenuItem updateMenuItem(UUID id, MenuItem menuItemDetails) {
+    public MenuItem updateMenuItem(MenuItem menuItemDetails) {
+        UUID id = menuItemDetails.getId();
         logger.info("Updating menu item with ID: {}", id);
         MenuItem existingMenuItem = menuItemRepository.get(id);
         if (existingMenuItem == null) {

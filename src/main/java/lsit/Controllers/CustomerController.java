@@ -31,7 +31,7 @@ public class CustomerController {
      * @return List of all customers.
      */
     @GetMapping
-    @PreAuthorize("hasRole('PIZZARIA_MANAGER')")
+    @PreAuthorize("hasRole('PIZZERIA_MANAGER')")
     public ResponseEntity<List<Customer>> getAllCustomers(){
         List<Customer> customers = customerService.getAllCustomers();
         return ResponseEntity.ok(customers);
@@ -44,7 +44,7 @@ public class CustomerController {
      * @return The Customer object if found, else 404 Not Found.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('PIZZARIA_MANAGER')")
+    @PreAuthorize("hasRole('PIZZERIA_MANAGER')")
     public ResponseEntity<Customer> getCustomerById(@PathVariable UUID id){
         Customer customer = customerService.getCustomerById(id);
         return ResponseEntity.ok(customer);
@@ -57,7 +57,7 @@ public class CustomerController {
      * @return The added Customer object.
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER', 'PIZZARIA_CUSTOMER')")
+    @PreAuthorize("hasAnyRole('PIZZERIA_SERVER', 'PIZZERIA_MANAGER', 'PIZZERIA_CUSTOMER')")
     public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer){
         Customer newCustomer = customerService.addCustomer(customer);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCustomer);
@@ -71,7 +71,7 @@ public class CustomerController {
      * @return The updated Customer object if found, else 404 Not Found.
      */
     @PutMapping
-    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER')")
+    @PreAuthorize("hasAnyRole('PIZZERIA_SERVER', 'PIZZERIA_MANAGER')")
     public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customerDetails){
         Customer updatedCustomer = customerService.updateCustomer(customerDetails);
         return ResponseEntity.ok(updatedCustomer);
@@ -84,7 +84,7 @@ public class CustomerController {
      * @return 200 OK if deleted, else 404 Not Found.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER')")
+    @PreAuthorize("hasAnyRole('PIZZERIA_SERVER', 'PIZZERIA_MANAGER')")
     public ResponseEntity<Void> deleteCustomer(@PathVariable UUID id){
         customerService.deleteCustomer(id);
         return ResponseEntity.ok().build();

@@ -64,7 +64,6 @@ public class CustomerService {
     /**
      * Updates an existing customer.
      *
-     * @param id The UUID of the customer to update.
      * @param customerDetails The Customer object containing updated details.
      * @return The updated Customer object.
      * @throws ResourceNotFoundException if the customer is not found.
@@ -77,7 +76,6 @@ public class CustomerService {
             logger.error("Customer not found with ID: {}", id);
             throw new ResourceNotFoundException("Customer not found");
         }
-        // TO DO: decide if customer can also change their id
 
         if (customerDetails.getName() != null) {
             existingCustomer.setName(customerDetails.getName());
