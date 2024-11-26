@@ -70,10 +70,10 @@ public class CustomerController {
      * @param customerDetails The updated customer details.
      * @return The updated Customer object if found, else 404 Not Found.
      */
-    @PutMapping("/{id}")
+    @PutMapping
     @PreAuthorize("hasAnyRole('PIZZARIA_SERVER', 'PIZZARIA_MANAGER')")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody Customer customerDetails){
-        Customer updatedCustomer = customerService.updateCustomer(id, customerDetails);
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customerDetails){
+        Customer updatedCustomer = customerService.updateCustomer(customerDetails);
         return ResponseEntity.ok(updatedCustomer);
     }
 
