@@ -23,31 +23,36 @@ public class PaymentController {
         this.paymentRepository = paymentRepository;
     }
 
+    // access: manager
     @GetMapping("/payments")
-    public List<Payment> list(){
+    public List<Payment> getAllPayments(){
         return paymentRepository.list();
     }
 
+    // access: manager
     @GetMapping("/payments/{id}")
-    public Payment get(@PathVariable("id") UUID id){
+    public Payment getPaymentById(@PathVariable("id") UUID id){
         return paymentRepository.get(id);
     }
 
+    // access: server, manager
     @PostMapping("/payments")
-    public Payment add(@RequestBody Payment p){
+    public Payment addPayment(@RequestBody Payment p){
         paymentRepository.add(p);
         return p;
     }
 
+    // access: server, manager
     @PutMapping("/payments/{id}")
-    public Payment update(@PathVariable("id") UUID id, @RequestBody Payment p){
+    public Payment updatePayment(@PathVariable("id") UUID id, @RequestBody Payment p){
         p.id = id;
         paymentRepository.update(p);
         return p;
     }
 
+    // access: manager
     @DeleteMapping("/payments/{id}")
-    public void delete(@PathVariable("id") UUID id){
+    public void deletePayment(@PathVariable("id") UUID id){
         paymentRepository.remove(id);
     }
 

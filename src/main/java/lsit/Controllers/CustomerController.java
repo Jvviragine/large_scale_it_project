@@ -4,11 +4,14 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import lsit.Exceptions.ResourceNotFoundException;
 import lsit.Models.Customer;
-import lsit.Repositories.CustomerRepository;
+import lsit.Services.CustomerService;
 
 /**
  * Controller for handling Customer-related HTTP requests.
@@ -20,80 +23,75 @@ import lsit.Repositories.CustomerRepository;
 public class CustomerController {
     
     @Autowired
-    private CustomerRepository customerRepository;
+    private CustomerService customerService;
 
     /**
-     * Retrieves all customers.
+     * Retrieves all customers. access: manager
      * 
      * @return List of all customers.
      */
     @GetMapping
+    @PreAuthorize("hasRole('PIZZERIA_MANAGER')")
     public ResponseEntity<List<Customer>> getAllCustomers(){
-        List<Customer> customers = customerRepository.list();
+        List<Customer> customers = customerService.getAllCustomers();
         return ResponseEntity.ok(customers);
     }
 
     /**
-     * Retrieves a customer by their UUID.
+     * Retrieves a customer by their UUID. access: manager
      * 
      * @param id The UUID of the customer.
      * @return The Customer object if found, else 404 Not Found.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('PIZZERIA_MANAGER')")
     public ResponseEntity<Customer> getCustomerById(@PathVariable UUID id){
-        Customer customer = customerRepository.get(id);
-        if(customer != null){
-            return ResponseEntity.ok(customer);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        Customer customer = customerService.getCustomerById(id);
+        return ResponseEntity.ok(customer);
     }
 
     /**
-     * Adds a new customer.
+     * Adds a new customer. access: customer, server, manager
      * 
      * @param customer The customer details.
      * @return The added Customer object.
      */
     @PostMapping
+    @PreAuthorize("hasAnyRole('PIZZERIA_SERVER', 'PIZZERIA_MANAGER', 'PIZZERIA_CUSTOMER')")
     public ResponseEntity<Customer> addCustomer(@RequestBody Customer customer){
-        customerRepository.add(customer);
-        return ResponseEntity.ok(customer);
+        Customer newCustomer = customerService.addCustomer(customer);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newCustomer);
     }
 
     /**
-     * Updates an existing customer.
+     * Updates an existing customer. access: server, manager
      * 
      * @param id The UUID of the customer to update.
      * @param customerDetails The updated customer details.
      * @return The updated Customer object if found, else 404 Not Found.
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody Customer customerDetails){
-        customerDetails.setId(id);
-        customerRepository.update(customerDetails);
-        Customer updatedCustomer = customerRepository.get(id);
-        if(updatedCustomer != null){
-            return ResponseEntity.ok(updatedCustomer);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping
+    @PreAuthorize("hasAnyRole('PIZZERIA_SERVER', 'PIZZERIA_MANAGER')")
+    public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customerDetails){
+        Customer updatedCustomer = customerService.updateCustomer(customerDetails);
+        return ResponseEntity.ok(updatedCustomer);
     }
 
     /**
-     * Deletes a customer by their UUID.
+     * Deletes a customer by their UUID. access: server, manager
      * 
      * @param id The UUID of the customer to delete.
      * @return 200 OK if deleted, else 404 Not Found.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('PIZZERIA_SERVER', 'PIZZERIA_MANAGER')")
     public ResponseEntity<Void> deleteCustomer(@PathVariable UUID id){
-        Customer customer = customerRepository.get(id);
-        if(customer != null){
-            customerRepository.remove(id);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        customerService.deleteCustomer(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

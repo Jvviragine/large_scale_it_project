@@ -5,29 +5,20 @@ import lsit.Models.MenuItem;
 
 
 @Repository
-public class MenuItemRepository {
-    static HashMap<UUID, MenuItem> menu = new HashMap<>();
-
-    public void add(MenuItem i){
-        i.id = UUID.randomUUID();
-        menu.put(i.id, i);
+public class MenuItemRepository extends GenericS3Repository<MenuItem> {
+    public MenuItemRepository() {
+        super("menuitems", MenuItem.class);
     }
 
-    public MenuItem get(UUID id){
-        return menu.get(id);
+    @Override
+    protected void setItemId(MenuItem item) {
+        if (item.getId() == null) {
+            item.setId(UUID.randomUUID());
+        }
     }
 
-    public void remove(UUID id){
-        menu.remove(id);
-    }
-
-    public void update(MenuItem i){
-        MenuItem x = menu.get(i.id);
-        x.name = i.name;
-        x.size = i.size;
-    }
-
-    public List<MenuItem> list(){
-        return new ArrayList<>(menu.values());
+    @Override
+    protected UUID getItemId(MenuItem item) {
+        return item.getId();
     }
 }
