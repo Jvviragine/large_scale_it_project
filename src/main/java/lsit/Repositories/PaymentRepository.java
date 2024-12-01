@@ -1,46 +1,24 @@
 package lsit.Repositories;
 
 import java.util.*;
-
 import org.springframework.stereotype.Repository;
-
 import lsit.Models.Payment;
 
-
 @Repository
-public class PaymentRepository {
-    
-    static HashMap<UUID, Payment> payments = new HashMap<>();
-
-    public void add(Payment p){
-        p.id = UUID.randomUUID();
-        payments.put(p.id, p);
+public class PaymentRepository extends GenericS3Repository<Payment>  {
+    public PaymentRepository() {
+        super("payments", Payment.class);
     }
 
-    public Payment get(UUID id){
-        return payments.get(id);
+    @Override
+    protected void setItemId(Payment payment){
+        if (payment.getPaymentId() == null){
+            payment.setPaymentId(UUID.randomUUID());
+        }
     }
 
-    public void remove(UUID id){
-        payments.remove(id);
+    @Override
+    protected UUID getItemId(Payment payment){
+        return payment.getPaymentId();
     }
-
-    public void update(Payment p){
-
-        Payment x = payments.get(p.id);
-        x.amount = p.amount;
-        x.order = p.order;
-    }
-
-    public void process(Payment p){
-        Payment x = payments.get(p.id);
-        x.processed = true;
-    }
-
-    
-
-    public List<Payment> list(){
-        return new ArrayList<>(payments.values());
-    }
-    
 }
