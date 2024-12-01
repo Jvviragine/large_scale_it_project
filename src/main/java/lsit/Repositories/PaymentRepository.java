@@ -4,7 +4,6 @@ import java.util.*;
 import org.springframework.stereotype.Repository;
 import lsit.Models.Payment;
 
-
 @Repository
 public class PaymentRepository extends GenericS3Repository<Payment>  {
     public PaymentRepository() {
