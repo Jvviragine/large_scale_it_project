@@ -7,29 +7,29 @@ import javax.validation.constraints.Size;
 
 public class Payment {
 
-    public UUID OrderId;
+    public UUID orderId;
     public Boolean processed; // true if paid succesfuly , false if not
     public Double amount;
-    public UUID PaymentId;
+    public UUID paymentId;
 
     public Payment(UUID OrderId, UUID PaymentId, boolean processed, double amount){
-        this.PaymentId =  UUID.randomUUID();
-        this.OrderId = OrderId;
+        this.paymentId =  UUID.randomUUID();
+        this.orderId = OrderId;
         this.processed = processed;
         this.amount = amount;
     }
 
     // get the order id
     public UUID getOrderId(){
-        return OrderId;
+        return orderId;
     }
     // get payment id
     public UUID getPaymentId(){
-        return PaymentId;
+        return paymentId;
     }
 
     public void setPaymentId(UUID PaymentID){
-        this.PaymentId = PaymentID;
+        this.paymentId = PaymentID;
     }
 
     public boolean getStatus(){
