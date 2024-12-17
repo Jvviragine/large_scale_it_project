@@ -14,6 +14,6 @@ spring:
           gitlab:
             issuer-uri: https://gitlab.com
             user-name-attribute: sub
-erver:
+server:
   address: 0.0.0.0
   port: 8080
