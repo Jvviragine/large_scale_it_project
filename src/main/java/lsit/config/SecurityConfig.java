@@ -27,8 +27,55 @@ public class SecurityConfig {
         http
             .csrf(c -> c.disable())
             .authorizeHttpRequests(authorize -> authorize
-                .anyRequest().permitAll() // Disable authentication temporarily
+                //.requestMatchers("", "").permitAll() // If you want ot allow access to certain endpoints w/o authentication :)
+                .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(oauth2UserService())
+                )
             );
         return http.build();
+    }
+
+    @Bean
+    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
+        return userRequest -> {
+            OAuth2User oauth2User = new DefaultOAuth2UserService().loadUser(userRequest);
+
+            // Extract GitLab groups and convert to roles
+            List<String> groups = new ArrayList<>();
+
+            Object generalGroupsObj = oauth2User.getAttribute("groups");
+            if (generalGroupsObj instanceof List<?>) {
+                for (Object group : (List<?>) generalGroupsObj) {
+                    if (group instanceof String) {
+                        groups.add((String) group);
+                    }
+                }
+            }
+
+
+            List<GrantedAuthority> authorities = new ArrayList<>(oauth2User.getAuthorities());
+
+            if (!groups.isEmpty()) {
+                groups.forEach(group -> {
+                    if (group.contains("pizzeria_server")) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_PIZZERIA_SERVER"));
+                    }
+                    if (group.contains("pizzeria_manager")) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_PIZZERIA_MANAGER"));
+                    }
+                    if (group.contains("pizzeria_customer")) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_PIZZERIA_CUSTOMER"));
+                    }
+                });
+            }
+
+            // Log the extracted roles for debugging
+            authorities.forEach(authority -> System.out.println("Granted Authority: " + authority.getAuthority()));
+
+            return new DefaultOAuth2User(authorities, oauth2User.getAttributes(), "sub");
+        };
     }
 }
