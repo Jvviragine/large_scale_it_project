@@ -81,5 +81,14 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
     </dependencies>
+<!-- Spring Boot Maven Plugin -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
