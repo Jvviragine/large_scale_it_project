@@ -9,11 +9,8 @@ spring:
             client-secret: gloas-2b635dc4bf910399e28ed5ede32d88305bc7ebf6450150ee8a3cac4078fecf91
             scope: openid+profile+email
             authorization-grant-type: authorization_code
-            redirect-uri: http://158.178.148.216:8080/login/oauth2/code/gitlab
+            redirect-uri: http://localhost:8080/login/oauth2/code/gitlab
         provider:
           gitlab:
             issuer-uri: https://gitlab.com
             user-name-attribute: sub
-server:
-  address: 0.0.0.0
-  port: 8080
