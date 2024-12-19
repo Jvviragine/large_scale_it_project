@@ -9,7 +9,7 @@ on:
 env:
   PROJECT_ID: 'proud-armor-398307' # TODO replace DONE
   REGION: 'europe-west4'
-  WORKLOAD_IDENTITY_PROVIDER: 'projects/32043100966/locations/global/workloadIdentityPools/github/providers/my-repo/operations/bigare5csg5qmehy573k4ay000000000' # TODO replace DONE
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/32043100966/locations/global/workloadIdentityPools/github/providers/my-repo' # TODO replace DONE
 
 jobs:
   deploy:
