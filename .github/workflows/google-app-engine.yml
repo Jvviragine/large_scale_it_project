@@ -1,0 +1,67 @@
+name: 'build and deploy to app engine'
+
+on:
+  #push:
+  #  branches:
+  #    - main
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: 'proud-armor-398307' # TODO replace DONE
+  REGION: 'europe-west4'
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/32043100966/locations/global/workloadIdentityPools/github/providers/my-repo' # TODO replace DONE
+
+jobs:
+  deploy:
+    runs-on: 'ubuntu-latest'
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: 'Checkout'
+        uses: 'actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332' # actions/checkout@v4
+
+      - name: 'Setup JDK'
+        uses: 'actions/setup-java@v4' # actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 'Setup Maven' # Setup Maven environment
+        uses: 'actions/setup-java@v3' # Ensure you have Java installed
+        with:
+         distribution: 'temurin' # Replace with your desired JDK distribution
+         java-version: '17' # Replace with your desired Java version
+  
+      - name: 'Maven build jar file' # Build using Maven
+        run: mvn clean package
+  
+
+
+      - name: copy file
+        uses: canastro/copy-file-action@master
+        with:
+          source: "target/lsit-1.0-SNAPSHOT.jar" # TODO replace
+          target: "gcloud/pizza.jar" # TODO replace
+
+      # Configure Workload Identity Federation and generate an access token.
+      #
+      # See https://github.com/google-github-actions/auth for more options,
+      # including authenticating via a JSON credentials file.
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@f112390a2df9932162083945e46d439060d66ec2' # google-github-actions/auth@v2
+        with:
+          service_account: 'proud-armor-398307@appspot.gserviceaccount.com' # TODO replace DONE
+          workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
+
+      - id: 'deploy'
+        name: Google App Engine Deploy
+        uses: google-github-actions/deploy-appengine@v2
+        with:
+          project_id: ${{env.PROJECT_ID}}
+          flags: --no-cache
+          working_directory: 'gcloud'
+          deliverables: app.yaml
