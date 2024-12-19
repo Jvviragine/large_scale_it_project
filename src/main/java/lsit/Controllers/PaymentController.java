@@ -1,62 +1,98 @@
 package lsit.Controllers;
 
-import java.util.*;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import lsit.Exceptions.ResourceNotFoundException;
 import lsit.Models.Payment;
-import lsit.Repositories.PaymentRepository;
+import lsit.Services.PaymentService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * Controller for handling Payment-related HTTP requests.
+ */
 @RestController
 public class PaymentController {
-    PaymentRepository paymentRepository;
 
-    public PaymentController(PaymentRepository paymentRepository){
-        this.paymentRepository = paymentRepository;
-    }
+    @Autowired
+    private PaymentService paymentService;
 
-    // access: manager
+    /**
+     * Retrieves all payments. Access: manager
+     *
+     * @return List of all payments.
+     */
     @GetMapping("/payments")
-    @PreAuthorize("hasAnyRole('PIZZERIA_MANAGER')")
-    public List<Payment> getAllPayments(){
-        return paymentRepository.list();
+    @PreAuthorize("hasRole('PIZZERIA_MANAGER')")
+    public ResponseEntity<List<Payment>> getAllPayments() {
+        List<Payment> payments = paymentService.getAllPayments();
+        return ResponseEntity.ok(payments);
     }
 
-    // access: manager, server
+        /**
+     * Retrieves a payment by its UUID.
+     *
+     * @param id The UUID of the payment.
+     * @return The Payment object if found.
+     */
     @GetMapping("/payments/{id}")
     @PreAuthorize("hasAnyRole('PIZZERIA_SERVER', 'PIZZERIA_MANAGER')")
-    public Payment getPaymentById(@PathVariable("id") UUID PaymentId){
-        return paymentRepository.get(PaymentId);
+    public ResponseEntity<Payment> getPaymentById(@PathVariable UUID id) {
+        Payment payment = paymentService.getPaymentById(id);
+        return ResponseEntity.ok(payment);
     }
 
-    // access: server, manager
+
+    /**
+     * Adds a new payment. Access: server, manager
+     *
+     * @param payment The payment details.
+     * @return The added Payment object.
+     */
     @PostMapping("/payments")
     @PreAuthorize("hasAnyRole('PIZZERIA_SERVER', 'PIZZERIA_MANAGER')")
-    public Payment addPayment(@RequestBody Payment p){
-        paymentRepository.add(p);
-        return p;
+    public ResponseEntity<Payment> addPayment(@RequestBody Payment payment) {
+        Payment newPayment = paymentService.addPayment(payment);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newPayment);
     }
 
-    // access: manager
+    /**
+     * Updates an existing payment. Access: manager
+     *
+     * @param id The UUID of the payment to update.
+     * @param paymentDetails The updated payment details.
+     * @return The updated Payment object.
+     */
     @PutMapping("/payments/{id}")
-    @PreAuthorize("hasAnyRole('PIZZERIA_MANAGER')")
-    public Payment updatePayment(@PathVariable("id") UUID PaymentId, @RequestBody Payment p){
-        p.setPaymentId(PaymentId);
-        paymentRepository.update(p);
-        return p;
+    @PreAuthorize("hasRole('PIZZERIA_MANAGER')")
+    public ResponseEntity<Payment> updatePayment(@PathVariable UUID id, @RequestBody Payment paymentDetails) {
+        Payment updatedPayment = paymentService.updatePayment(id, paymentDetails);
+        return ResponseEntity.ok(updatedPayment);
     }
 
-    // access: manager
+    /**
+     * Deletes a payment by its UUID. Access: manager
+     *
+     * @param id The UUID of the payment to delete.
+     * @return 200 OK if deleted.
+     */
     @DeleteMapping("/payments/{id}")
-    @PreAuthorize("hasAnyRole('PIZZERIA_MANAGER')")
-    public void deletePayment(@PathVariable("id") UUID PaymentId){
-        paymentRepository.remove(PaymentId);
+    @PreAuthorize("hasRole('PIZZERIA_MANAGER')")
+    public ResponseEntity<Void> deletePayment(@PathVariable UUID id) {
+        paymentService.deletePayment(id);
+        return ResponseEntity.ok().build();
     }
 
+    /**
+     * Handles ResourceNotFoundException and returns 404 status with message.
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
 }

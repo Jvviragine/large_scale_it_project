@@ -1,46 +1,67 @@
 package lsit.Models;
 
-import java.util.List;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 public class Payment {
 
-    public UUID orderId;
-    public Boolean processed; // true if paid succesfuly , false if not
-    public Double amount;
-    public UUID paymentId;
+    private UUID id;
+    private Boolean processed; // true if paid successfully, false if not
+    private Double amount;
+    private UUID orderId;
 
-    public Payment(UUID OrderId, UUID PaymentId, boolean processed, double amount){
-        this.paymentId =  UUID.randomUUID();
-        this.orderId = OrderId;
+    // Default constructor
+    public Payment() {
+        this.id = UUID.randomUUID();
+    }
+
+    // Overloaded constructor
+    public Payment(UUID orderId, boolean processed, double amount) {
+        this.id = UUID.randomUUID(); // Generate a unique ID for each payment
+        this.orderId = orderId;
         this.processed = processed;
         this.amount = amount;
     }
 
-    // get the order id
-    public UUID getOrderId(){
+    // Getter for orderId
+    public UUID getOrderId() {
         return orderId;
     }
-    // get payment id
-    public UUID getPaymentId(){
-        return paymentId;
+
+    // Setter for orderId
+    public void setOrderId(UUID orderId) {
+        this.orderId = orderId;
     }
 
-    public void setPaymentId(UUID PaymentID){
-        this.paymentId = PaymentID;
+    // Getter for id
+    public UUID getPaymentId() {
+        return id;
     }
 
-    public boolean getStatus(){
+    // Setter for id
+    public void setPaymentId(UUID paymentId) {
+        this.id = paymentId;
+    }
+
+    // Getter for processed
+    public boolean getStatus() {
         return processed;
     }
 
-    public double getAmount(){
+    // Setter for processed
+    public void setStatus(boolean processed) {
+        this.processed = processed;
+    }
+
+    // Getter for amount
+    public double getAmount() {
         return amount;
     }
-    
-    public void setAmount(double amount){
+
+    // Setter for amount
+    public void setAmount(double amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("Amount cannot be negative");
+        }
         this.amount = amount;
     }
 }
