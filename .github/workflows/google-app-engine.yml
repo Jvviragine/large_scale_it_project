@@ -54,7 +54,7 @@ jobs:
         name: 'Authenticate to Google Cloud'
         uses: 'google-github-actions/auth@v2' # google-github-actions/auth@v2
         with:
-          service_account: 'proud-armor-398307@appspot.gserviceaccount.com' # TODO replace DONE
+          service_account: 'pizzeria-git-delevery@proud-armor-398307.iam.gserviceaccount.com' # TODO replace DONE
           workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
 
       - id: 'deploy'
