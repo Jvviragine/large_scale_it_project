@@ -1,10 +1,10 @@
 name: 'build and deploy to app engine'
 
 on:
-  #push:
-  #  branches:
-  #    - main
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  # workflow_dispatch:
 
 env:
   PROJECT_ID: 'proud-armor-398307' # TODO replace DONE
