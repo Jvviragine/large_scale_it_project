@@ -1,2 +1,5 @@
 target
 .env
+/dist
+/.vscode
+.vscode/settings.json

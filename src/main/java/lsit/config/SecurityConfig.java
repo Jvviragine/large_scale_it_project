@@ -28,7 +28,11 @@ public class SecurityConfig {
             .csrf(c -> c.disable())
             .authorizeHttpRequests(authorize -> authorize
                 //.requestMatchers("", "").permitAll() // If you want ot allow access to certain endpoints w/o authentication :)
-                .anyRequest().authenticated()
+                .requestMatchers("/customers").authenticated()
+                .requestMatchers("/menu").authenticated()
+                .requestMatchers("/orders").authenticated()
+                .requestMatchers("/payments").authenticated()
+                .anyRequest().permitAll()
             )
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo
