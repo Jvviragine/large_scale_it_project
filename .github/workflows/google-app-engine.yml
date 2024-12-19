@@ -26,14 +26,14 @@ jobs:
       - name: 'Setup JDK'
         uses: 'actions/setup-java@v4' # actions/setup-java@v2
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: 'Setup Maven' # Setup Maven environment
         uses: 'actions/setup-java@v3' # Ensure you have Java installed
         with:
          distribution: 'temurin' # Replace with your desired JDK distribution
-         java-version: '17' # Replace with your desired Java version
+         java-version: '21' # Replace with your desired Java version
   
       - name: 'Maven build jar file' # Build using Maven
         run: mvn clean package
