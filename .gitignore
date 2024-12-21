@@ -3,3 +3,6 @@ target
 /dist
 /.vscode
 .vscode/settings.json
+.terraform/
+terraform.tfstate
+*.tfstate.backup
